@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Zwei-Tun</string>
+    <string name="action_settings">Settings</string>
+    <string-array name="priorities">
+        <item>1 - unimportant</item>
+        <item>2 - less important</item>
+        <item>3 - normal</item>
+        <item>4 - important</item>
+        <item>5 - very important</item>
+    </string-array>
+
+</resources>

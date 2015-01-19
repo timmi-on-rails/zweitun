@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="priority_colors">
+        <item>0xFFFFFFFF</item>
+        <item>0xFF00FF00</item>
+        <item>0xFFFFFF00</item>
+        <item>0xFFFF7F00</item>
+        <item>0xFFFF0000</item>
+    </integer-array>
+</resources>
