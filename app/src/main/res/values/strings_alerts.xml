@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="alert_discard">Clear trash?</string>
+    <string name="alert_complete_task">Complete task?</string>
+</resources>

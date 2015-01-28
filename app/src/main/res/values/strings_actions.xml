@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_discard">Empty trash</string>
+    <string name="action_new_task">New task</string>
+    <string name="action_new_task_accept">Create new task</string>
+    <string name="action_new_category">New category</string>
+    <string name="action_settings">Settings</string>
+</resources>

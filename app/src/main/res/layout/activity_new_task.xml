@@ -1,29 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical"
+    >
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:padding="10dp"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/enter_task_name"
-        android:id="@+id/textView"
-        android:textSize="26sp" />
-
     <EditText
+        android:hint="@string/task_name_hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/enter_task_priority"
-        android:id="@+id/textView2"
-        android:height="50dp" />
+        android:id="@+id/taskName" />
 
     <Spinner
         android:layout_width="match_parent"
@@ -33,11 +25,29 @@
         android:clickable="true"
         android:textSize="26sp" />
 
-    <Button
+    <DatePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/datePicker" />
+
+    <TimePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timePicker" />
+
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="OK"
-        android:onClick="selfDestruct"
-        android:id="@+id/button" />
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:hint="1.3"
+        android:id="@+id/timeScale" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New CheckBox"
+        android:id="@+id/checkBox" />
 
 </LinearLayout>
+    </ScrollView>
