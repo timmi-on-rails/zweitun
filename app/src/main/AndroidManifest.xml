@@ -20,13 +20,11 @@
         <activity
             android:name=".NewTaskActivity"
             android:label="@string/action_new_task"
-            android:parentActivityName=".TasksActivity"
         />
 
         <activity
             android:name=".SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".TasksActivity"
             android:theme="@style/Theme.Settings"
         />
     </application>

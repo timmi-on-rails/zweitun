@@ -14,8 +14,13 @@ public class TrashCursorAdapter extends ResourceCursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView name = (TextView) view.findViewById(R.id.continent);
-        name.setText(cursor.getString(cursor.getColumnIndex("name")));
-        name.setTextColor(context.getResources().getIntArray(R.array.priority_colors)[cursor.getInt(cursor.getColumnIndex("priority"))]);
+        TextView task_name = (TextView) view.findViewById(R.id.task_name);
+        TextView category_name = (TextView) view.findViewById(R.id.category_name);
+        TextView task_due_at = (TextView) view.findViewById(R.id.task_due_at);
+
+        task_name.setText(cursor.getString(cursor.getColumnIndex("task_name")));
+        //task_name.setTextColor(context.getResources().getIntArray(R.array.priority_colors)[cursor.getInt(cursor.getColumnIndex("task_priority"))]);
+        category_name.setText(cursor.getString(cursor.getColumnIndex("category_name")));
+        task_due_at.setText(cursor.getString(cursor.getColumnIndex("task_due_at")));
     }
 }

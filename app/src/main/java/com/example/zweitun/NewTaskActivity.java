@@ -1,15 +1,20 @@
 package com.example.zweitun;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class NewTaskActivity extends ActionBarActivity {
@@ -32,6 +37,32 @@ public class NewTaskActivity extends ActionBarActivity {
         spinner.setAdapter(adapter);
         spinner.setSelection(2);
 
+
+        ArrayList<SpinnerObject> list = new ArrayList< SpinnerObject >();
+
+        StorageManager sm = new StorageManager(this);
+
+        Cursor cursor = sm.getCategories();
+
+        if ( cursor.moveToFirst () ) {
+            do {
+                list.add ( new SpinnerObject (cursor.getInt(cursor.getColumnIndex("_id")) , cursor.getString(cursor.getColumnIndex("name")) ) );
+            } while (cursor.moveToNext());
+        }
+
+        ArrayAdapter<SpinnerObject> categoryAdapter = new ArrayAdapter<SpinnerObject>(this, R.layout.support_simple_spinner_dropdown_item, list);
+        categoryAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        Spinner cs = (Spinner) findViewById(R.id.category);
+        cs.setAdapter(categoryAdapter);
+
+
+
+        Spinner ts = (Spinner) findViewById(R.id.time_scale);
+
+        ArrayAdapter<String> tsAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, getResources().getStringArray(R.array.time_scales));
+        tsAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        ts.setAdapter(tsAdapter);
+
         ((TimePicker) findViewById(R.id.timePicker)).setIs24HourView(true);
     }
 
@@ -43,41 +74,31 @@ public class NewTaskActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch(item.getItemId()) {
+            case R.id.action_new_task_accept:
+                Intent data = new Intent();
+                data.putExtra(TASK_NAME, ((EditText) findViewById(R.id.taskName)).getText().toString());
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+                data.putExtra(MAX_PRIORITY, ((Spinner) findViewById(R.id.spinner)).getSelectedItemPosition());
 
-        if (id == R.id.action_new_task_accept) {
-            Intent data = new Intent();
-            data.putExtra(TASK_NAME, ((EditText) findViewById(R.id.taskName)).getText().toString());
+                DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
+                TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
+                int year = datePicker.getYear();
+                int month = datePicker.getMonth();
+                int day_of_month = datePicker.getDayOfMonth();
+                int hour = timePicker.getCurrentHour();
+                int minute = timePicker.getCurrentMinute();
+                data.putExtra(DUE_AT, String.format("%04d-%02d-%02d %02d:%02d", year, month, day_of_month, hour, minute));
 
-            data.putExtra(MAX_PRIORITY, ((Spinner) findViewById(R.id.spinner)).getSelectedItemPosition());
+                data.putExtra(TIME_SCALE, ((Spinner) findViewById(R.id.time_scale)).getSelectedItemPosition());
 
-            DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
-            TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
-            int year = datePicker.getYear();
-            int month = datePicker.getMonth();
-            int day_of_month = datePicker.getDayOfMonth();
-            int hour = timePicker.getCurrentHour();
-            int minute = timePicker.getCurrentMinute();
-            data.putExtra(DUE_AT, String.format("%04d-%02d-%02d %02d:%02d", year, month, day_of_month, hour, minute));
+                setResult(RESULT_OK, data);
+                finish();
+                return true;
 
-            data.putExtra(TIME_SCALE, ((EditText) findViewById(R.id.timeScale)).getText().toString());
-
-            setResult(RESULT_OK, data);
-            finish();
-            return true;
-        }
-
-        if (id == android.R.id.home) {
-            onBackPressed();
-            return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

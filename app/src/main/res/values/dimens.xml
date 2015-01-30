@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="label_text_size">24sp</dimen>
+    <dimen name="category_name_padding">3dp</dimen>
+    <dimen name="task_due_at_padding">3dp</dimen>
+    <dimen name="task_name_padding">15dp</dimen>
 </resources>

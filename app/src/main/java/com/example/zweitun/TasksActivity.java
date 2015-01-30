@@ -3,6 +3,7 @@ package com.example.zweitun;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,12 +24,10 @@ import android.widget.Toast;
 
 
 public class TasksActivity extends ActionBarActivity {
-    private static final int NEW_TASK = 1;
-
     StorageManager sm;
-    TrashFragment trashFragment;
-    TasksFragment tasksFragment;
-    CategoriesFragment categoriesFragment;
+    boolean trashFragmentNeedsRefresh = false;
+    boolean tasksFragmentNeedsRefresh = false;
+    boolean categoriesFragmentNeedsRefresh = false;
 
     @Override
     public void onDestroy() {
@@ -69,27 +69,11 @@ public class TasksActivity extends ActionBarActivity {
             }
         };
         actionBar.setListNavigationCallbacks(adapter, navigationListener);
-    }
 
-    private void updateFragments() {
-        //Toast.makeText(getActivity().getApplicationContext(), "16. onDestroy()", Toast.LENGTH_SHORT).show();
-
-        trashFragment.onRefresh();
-        tasksFragment.onRefresh();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NEW_TASK) {
-            if (resultCode == RESULT_OK) {
-                String task_name = data.getStringExtra(NewTaskActivity.TASK_NAME);
-                int max_priority = data.getIntExtra(NewTaskActivity.MAX_PRIORITY, 2);
-                String due_at = data.getStringExtra(NewTaskActivity.DUE_AT);
-                float time_scale = data.getFloatExtra(NewTaskActivity.TIME_SCALE, -1);
-
-                sm.addTask(task_name, max_priority, due_at, time_scale);
-                updateFragments();
-            }
+        try {
+            Toast.makeText(this, "Version " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName, Toast.LENGTH_SHORT).show();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -105,24 +89,8 @@ public class TasksActivity extends ActionBarActivity {
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-            case R.id.action_new_task:
-                startActivityForResult(new Intent(this, NewTaskActivity.class), NEW_TASK);
-                return true;
             case R.id.action_new_category:
                 //startActivityForResult(new Intent(this, NewCategoryActivity.class), NEW_CATEGORY);
-                return true;
-            case R.id.action_discard:
-                new AlertDialog.Builder(this)
-                        .setMessage(R.string.alert_discard)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                sm.deleteAllCompletedTasks();
-                                updateFragments();
-                            }
-                        })
-                        .setNegativeButton(R.string.no, null)
-                        .show();
                 return true;
         }
 
@@ -138,26 +106,23 @@ public class TasksActivity extends ActionBarActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    tasksFragment = TasksFragment.newInstance();
-                    return tasksFragment;
+                    return TasksFragment.newInstance();
                 case 1:
-                    trashFragment = TrashFragment.newInstance();
-                    return trashFragment;
+                    return TrashFragment.newInstance();
                 case 2:
-                    categoriesFragment = CategoriesFragment.newInstance();
-                    return categoriesFragment;
+                    return CategoriesFragment.newInstance();
                 default:
                     return null;
             }
         }
 
         @Override
-        public int getCount() {
-            return 3;
-        }
+        public int getCount() { return 3; }
     }
 
     public static class TasksFragment extends SwipeRefreshListFragment {
+        private static final int NEW_TASK = 1;
+
         TaskCursorAdapter adapter;
 
         public static TasksFragment newInstance() { return new TasksFragment(); }
@@ -178,7 +143,7 @@ public class TasksActivity extends ActionBarActivity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            adapter = new TaskCursorAdapter(getActivity(), R.layout.task_info, null, 0);
+            adapter = new TaskCursorAdapter(getActivity(), R.layout.list_item_task, null, 0);
             setListAdapter(adapter);
             swapCursor();
         }
@@ -193,7 +158,8 @@ public class TasksActivity extends ActionBarActivity {
                             Cursor cursor = (Cursor) getListAdapter().getItem(position);
 
                             ((TasksActivity) getActivity()).sm.completeTask(cursor.getInt(cursor.getColumnIndex("_id")));
-                            ((TasksActivity) getActivity()).updateFragments();
+                            swapCursor();
+                            ((TasksActivity) getActivity()).trashFragmentNeedsRefresh = true;
                         }
                     })
                     .setNegativeButton(R.string.no, null)
@@ -203,9 +169,50 @@ public class TasksActivity extends ActionBarActivity {
         }
 
         @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_new_task:
+                    startActivityForResult(new Intent(getActivity(), NewTaskActivity.class), NEW_TASK);
+                    return true;
+            }
+
+            return super.onOptionsItemSelected(item);
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            Toast.makeText(getActivity(), "bla", Toast.LENGTH_SHORT);
+
+            if (requestCode == NEW_TASK) {
+                if (resultCode == RESULT_OK) {
+                    String task_name = data.getStringExtra(NewTaskActivity.TASK_NAME);
+                    int max_priority = data.getIntExtra(NewTaskActivity.MAX_PRIORITY, 2);
+                    String due_at = data.getStringExtra(NewTaskActivity.DUE_AT);
+                    int time_scale = data.getIntExtra(NewTaskActivity.TIME_SCALE, -1);
+
+                    ((TasksActivity) getActivity()).sm.addTask(task_name, max_priority, due_at, time_scale);
+                    Toast.makeText(getActivity(), "bla", Toast.LENGTH_SHORT);
+                    Log.d("sad","blub");
+                    swapCursor();
+                }
+            }
+
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+
+        @Override
         public void onRefresh() {
             swapCursor();
             setRefreshing(false);
+        }
+
+        @Override
+        public void setUserVisibleHint(boolean isVisibleToUser) {
+            super.setUserVisibleHint(isVisibleToUser);
+            if (isVisibleToUser && ((TasksActivity) getActivity()).tasksFragmentNeedsRefresh) {
+                swapCursor();
+                ((TasksActivity) getActivity()).tasksFragmentNeedsRefresh = false;
+            }
         }
 
         private void swapCursor() {
@@ -234,15 +241,45 @@ public class TasksActivity extends ActionBarActivity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            adapter = new TrashCursorAdapter(getActivity(), R.layout.task_info, null, 0);
+            adapter = new TrashCursorAdapter(getActivity(), R.layout.list_item_trash, null, 0);
             setListAdapter(adapter);
             swapCursor();
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_discard:
+                    new AlertDialog.Builder(getActivity())
+                            .setMessage(R.string.alert_discard)
+                            .setCancelable(true)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    ((TasksActivity) getActivity()).sm.deleteAllCompletedTasks();
+                                    swapCursor();
+                                }
+                            })
+                            .setNegativeButton(R.string.no, null)
+                            .show();
+                    return true;
+            }
+
+            return super.onOptionsItemSelected(item);
         }
 
         @Override
         public void onRefresh() {
             swapCursor();
             setRefreshing(false);
+        }
+
+        @Override
+        public void setUserVisibleHint(boolean isVisibleToUser) {
+            super.setUserVisibleHint(isVisibleToUser);
+            if (isVisibleToUser && ((TasksActivity) getActivity()).trashFragmentNeedsRefresh) {
+                swapCursor();
+                ((TasksActivity) getActivity()).trashFragmentNeedsRefresh = false;
+            }
         }
 
         private void swapCursor() {
@@ -287,6 +324,8 @@ public class TasksActivity extends ActionBarActivity {
             checkBox.setChecked(!checked);
             ((TasksActivity) getActivity()).sm.setCategoryVisibility(category_id, !checked);
 
+            ((TasksActivity) getActivity()).tasksFragmentNeedsRefresh = true;
+
             super.onListItemClick(l, v, position, id);
         }
 
@@ -294,6 +333,16 @@ public class TasksActivity extends ActionBarActivity {
         public void onRefresh() {
             swapCursor();
             setRefreshing(false);
+        }
+
+        @Override
+        public void setUserVisibleHint(boolean isVisibleToUser) {
+            super.setUserVisibleHint(isVisibleToUser);
+            if (isVisibleToUser && ((TasksActivity) getActivity()).categoriesFragmentNeedsRefresh) {
+                Toast.makeText(getActivity().getApplicationContext(), "Refreshing Categories", Toast.LENGTH_SHORT).show();
+                swapCursor();
+                ((TasksActivity) getActivity()).categoriesFragmentNeedsRefresh = false;
+            }
         }
 
         private void swapCursor() {

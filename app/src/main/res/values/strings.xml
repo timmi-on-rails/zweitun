@@ -8,4 +8,18 @@
         <item>4 - important</item>
         <item>5 - very important</item>
     </string-array>
+
+    <string-array name="time_scales">
+        <item>fixed priority</item>
+        <item>two weeks</item>
+        <item>one week</item>
+        <item>one day</item>
+    </string-array>
+
+    <integer-array name="time_scales_values">
+        <item>-1</item>
+        <item>14</item>
+        <item>7</item>
+        <item>1</item>
+    </integer-array>
 </resources>
