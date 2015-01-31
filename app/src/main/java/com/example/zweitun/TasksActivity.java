@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -181,8 +182,6 @@ public class TasksActivity extends ActionBarActivity {
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            Toast.makeText(getActivity(), "bla", Toast.LENGTH_SHORT);
-
             if (requestCode == NEW_TASK) {
                 if (resultCode == RESULT_OK) {
                     String task_name = data.getStringExtra(NewTaskActivity.TASK_NAME);
@@ -191,8 +190,8 @@ public class TasksActivity extends ActionBarActivity {
                     int time_scale = data.getIntExtra(NewTaskActivity.TIME_SCALE, -1);
 
                     ((TasksActivity) getActivity()).sm.addTask(task_name, max_priority, due_at, time_scale);
-                    Toast.makeText(getActivity(), "bla", Toast.LENGTH_SHORT);
-                    Log.d("sad","blub");
+
+
                     swapCursor();
                 }
             }
@@ -339,7 +338,6 @@ public class TasksActivity extends ActionBarActivity {
         public void setUserVisibleHint(boolean isVisibleToUser) {
             super.setUserVisibleHint(isVisibleToUser);
             if (isVisibleToUser && ((TasksActivity) getActivity()).categoriesFragmentNeedsRefresh) {
-                Toast.makeText(getActivity().getApplicationContext(), "Refreshing Categories", Toast.LENGTH_SHORT).show();
                 swapCursor();
                 ((TasksActivity) getActivity()).categoriesFragmentNeedsRefresh = false;
             }

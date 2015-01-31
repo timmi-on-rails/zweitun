@@ -3,13 +3,30 @@ package com.example.zweitun;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.ResourceCursorAdapter;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 
 public class TaskCursorAdapter extends ResourceCursorAdapter {
     public TaskCursorAdapter(Context context, int layout, Cursor c, int flags) {
         super(context, layout, c, flags);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
+
+        view.setOnTouchListener(new OnSwipeTouchListener(view.getContext(), position) {
+        @Override
+        public void onSwipeRight(int position) {
+            Log.d("ba", "id: " + position);
+        }
+        });
+
+        return view;
     }
 
     @Override
