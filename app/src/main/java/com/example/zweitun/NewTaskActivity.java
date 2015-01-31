@@ -37,26 +37,6 @@ public class NewTaskActivity extends ActionBarActivity {
         spinner.setAdapter(adapter);
         spinner.setSelection(2);
 
-
-        ArrayList<SpinnerObject> list = new ArrayList< SpinnerObject >();
-
-        StorageManager sm = new StorageManager(this);
-
-        Cursor cursor = sm.getCategories();
-
-        if ( cursor.moveToFirst () ) {
-            do {
-                list.add ( new SpinnerObject (cursor.getInt(cursor.getColumnIndex("_id")) , cursor.getString(cursor.getColumnIndex("name")) ) );
-            } while (cursor.moveToNext());
-        }
-
-        ArrayAdapter<SpinnerObject> categoryAdapter = new ArrayAdapter<SpinnerObject>(this, R.layout.support_simple_spinner_dropdown_item, list);
-        categoryAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        Spinner cs = (Spinner) findViewById(R.id.category);
-        cs.setAdapter(categoryAdapter);
-
-
-
         Spinner ts = (Spinner) findViewById(R.id.time_scale);
 
         ArrayAdapter<String> tsAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, getResources().getStringArray(R.array.time_scales));
