@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SimpleCursorAdapter;
@@ -53,8 +52,6 @@ public class MainActivity extends ActionBarActivity {
                 SharedPreferences.Editor edit=preferences.edit();
                 edit.putInt("position", getSupportActionBar().getSelectedNavigationIndex());
                 edit.commit();
-
-                Log.d("", "Saving Persistent Instancestate...");
 
                 tasksFragment = (TasksFragment) getSupportFragmentManager().findFragmentByTag("tasks_fragment");
 

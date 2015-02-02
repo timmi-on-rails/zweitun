@@ -9,6 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+
 import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.swipelistview.SwipeListView;
 
@@ -38,10 +42,27 @@ public class TasksFragment extends ListFragment implements LoaderManager.LoaderC
         list_id = getArguments().getLong(LIST_ID_KEY);
     }
 
-    @Override
+    /*@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.swipe_list_view, container, false);
         return view;
+    }*/
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Log.d("klickl", "klick");
+        if (adapter.ids.contains(id)) {
+            adapter.ids.remove(id);
+        } else {
+            adapter.ids.add(id);
+        }
+        //v.refreshDrawableState();
+
+        adapter.notifyDataSetChanged();
+
+
+
+        super.onListItemClick(l, v, position, id);
     }
 
     @Override
@@ -54,8 +75,8 @@ public class TasksFragment extends ListFragment implements LoaderManager.LoaderC
         loaderManager = getLoaderManager();
         loaderManager.initLoader(LOADER_ID, null, this);
 
-        ((SwipeListView) getListView()).setSwipeListViewListener(new BaseSwipeListViewListener() {
-            @Override
+        //((SwipeListView) getListView()).setSwipeListViewListener(new BaseSwipeListViewListener() {
+           /* @Override
             public void onClickFrontView(int position) {
                 Log.d("swipe", String.format("onClickFrontView %d", position));
             }
@@ -72,7 +93,7 @@ public class TasksFragment extends ListFragment implements LoaderManager.LoaderC
                     refreshCursor();
                 }
             }
-        });
+        });*/
     }
 
     public void refreshCursor() {
