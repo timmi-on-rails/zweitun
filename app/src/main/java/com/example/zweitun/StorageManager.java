@@ -4,21 +4,24 @@ package com.example.zweitun;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
+// NEED TO CLOSE DATABASE CONNECTION
 public class StorageManager {
     private SQLiteDatabase db;
     private DBOpenHelper dbOpenHelper;
 
-    public StorageManager(Context context) {
-        dbOpenHelper = new DBOpenHelper(context);
-        db = dbOpenHelper.getWritableDatabase();
+    private static StorageManager mInstance = null;
+
+    public static StorageManager getInstance(Context ctx) {
+        if (mInstance == null) {
+            mInstance = new StorageManager(ctx.getApplicationContext());
+        }
+
+        return mInstance;
     }
 
-    public void setCategoryVisibility(int id, boolean visibility) {
-        if (visibility)
-            db.execSQL("UPDATE categories SET visible=1 WHERE _id=" + id);
-        else
-            db.execSQL("UPDATE categories SET visible=0 WHERE _id=" + id);
+    private StorageManager(Context context) {
+        dbOpenHelper = new DBOpenHelper(context);
+        db = dbOpenHelper.getWritableDatabase();
     }
 
     public void close() {
