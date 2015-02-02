@@ -48,12 +48,6 @@ public class TrashActivity extends ListActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //@Override
-    public void onRefresh() {
-        swapCursor();
-        //setRefreshing(false);
-    }
-
     private void swapCursor() {
         //adapter.swapCursor(((MainActivity) getActivity()).ssdsdm.getCompletedTasks());
     }

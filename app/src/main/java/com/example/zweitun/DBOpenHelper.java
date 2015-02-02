@@ -40,13 +40,13 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         long id = db.insert("lists", null, values);
 
         db.execSQL("INSERT INTO lists (name) VALUES('Lustiger Scheiss');");
-for(int i=0; i<100; i++) {
+
     db.execSQL("INSERT INTO tasks (name, priority, deleted_at, list_id) VALUES('Schuhe putzen', 0, '','" + id + "');");
     db.execSQL("INSERT INTO tasks (name, priority, deleted_at, list_id) VALUES('PENNY', 1, '','" + id + "');");
     db.execSQL("INSERT INTO tasks (name, priority, deleted_at, list_id) VALUES('Arbeitslos melden', 2, '','" + id + "');");
     db.execSQL("INSERT INTO tasks (name, priority, deleted_at, list_id) VALUES('Lisa', 4, '','" + id + "');");
     db.execSQL("INSERT INTO tasks (name, priority, deleted_at, list_id) VALUES('Bad putzen', 3, 'a','" + id + "');");
-}
+
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +13,12 @@ import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.swipelistview.SwipeListView;
 
 
-public class TasksFragment extends ListFragment implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class TasksFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LIST_ID_KEY = "list_id";
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private static final int LOADER_ID = 0;
     private long list_id;
     private static TaskCursorAdapter adapter = null;
-    private LoaderManager lm;
+    private LoaderManager loaderManager;
 
     public long getListId() {
         return list_id;
@@ -42,10 +41,6 @@ public class TasksFragment extends ListFragment implements SwipeRefreshLayout.On
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.swipe_list_view, container, false);
-
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-
         return view;
     }
 
@@ -53,18 +48,11 @@ public class TasksFragment extends ListFragment implements SwipeRefreshLayout.On
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (adapter != null) {
-            //adapter.getCursor().close();
-        }
-
         adapter = new TaskCursorAdapter(getActivity(), R.layout.list_item_task, null, 0);
         setListAdapter(adapter);
 
-
-        lm = getLoaderManager();
-        lm.initLoader(1, null, this);
-
-        //refreshCursor();
+        loaderManager = getLoaderManager();
+        loaderManager.initLoader(LOADER_ID, null, this);
 
         ((SwipeListView) getListView()).setSwipeListViewListener(new BaseSwipeListViewListener() {
             @Override
@@ -87,18 +75,8 @@ public class TasksFragment extends ListFragment implements SwipeRefreshLayout.On
         });
     }
 
-    @Override
-    public void onRefresh() {
-        //refreshCursor();
-        refreshCursor();
-        swipeRefreshLayout.setRefreshing(false);
-    }
-
     public void refreshCursor() {
-        /*if (adapter != null) {
-            adapter.changeCursor(StorageManager.getInstance(getActivity()).getTasks(list_id));
-        }*/
-        lm.restartLoader(1, null, TasksFragment.this);
+        loaderManager.restartLoader(LOADER_ID, null, TasksFragment.this);
     }
 
     @Override

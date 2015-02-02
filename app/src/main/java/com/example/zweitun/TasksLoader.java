@@ -1,8 +1,8 @@
 package com.example.zweitun;
 
-
 import android.content.Context;
 import android.database.Cursor;
+
 
 public class TasksLoader extends SimpleCursorLoader {
     private Context context;
