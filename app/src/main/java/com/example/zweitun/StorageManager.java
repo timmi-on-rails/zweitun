@@ -4,12 +4,12 @@ package com.example.zweitun;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-// NEED TO CLOSE DATABASE CONNECTION
+
 public class StorageManager {
     private SQLiteDatabase db;
     private DBOpenHelper dbOpenHelper;
 
-    private static StorageManager mInstance = null;
+    private static StorageManager mInstance;
 
     public static StorageManager getInstance(Context ctx) {
         if (mInstance == null) {
@@ -44,8 +44,8 @@ public class StorageManager {
         return db.query("tasks", new String[] { "_id", "name", "priority", "due_at" }, "deleted_at = '' AND list_id = '" + list_id + "'", null, null, null, "tasks.priority DESC");
     }
 
-    public Cursor getdeleted_atTasks() {
-        return db.query("tasks LEFT JOIN lists ON (lists._id = tasks.list_id)", new String[] {"tasks._id AS _id", "tasks.name AS task_name", "tasks.priority AS task_priority", "tasks.due_at AS task_due_at", "lists.name AS list_name" }, "tasks.deleted_at != ''", null, null, null, "tasks.deleted_at DESC");
+    public Cursor getDeletedTasks() {
+        return db.query("tasks", new String[] {"_id", "name", "deleted_at" }, "deleted_at != ''", null, null, null, "deleted_at DESC");
     }
 
     public Cursor getLists() {

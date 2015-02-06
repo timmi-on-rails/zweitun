@@ -20,6 +20,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                              "deleted_at TEXT, " +
                              "list_id INTEGER);";
 
+    public static final String LISTS_COLUMN_ID = "_id";
+    public static final String LISTS_COLUMN_NAME = "name";
     private static final String LISTS_TABLE_CREATE =
         "CREATE TABLE lists (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT);";
 

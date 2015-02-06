@@ -6,7 +6,11 @@
     <item android:id="@+id/action_new_task"
         android:icon="@drawable/ic_action_new"
         android:title="@string/action_new_task"
-        app:showAsAction="ifRoom"  />
+        app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/action_show_trash"
+        android:title="@string/action_show_trash"
+        app:showAsAction="never" />
 
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />

@@ -1,117 +1,87 @@
 package com.example.zweitun;
 
-import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
+import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
+import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
-import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
-import com.fortysevendeg.swipelistview.SwipeListView;
+/**
+ * Fragment handles display/edit of a task list
+ */
+public class TasksFragment extends ListFragment {
+    public static final String LIST_ID_KEY = "list_id";
 
+    private long listId;
+    private TaskCursorAdapter adapter;
+    private DynamicListView dynamicListView;
 
-public class TasksFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String LIST_ID_KEY = "list_id";
-    private static final int LOADER_ID = 0;
-    private long list_id;
-    private static TaskCursorAdapter adapter = null;
-    private LoaderManager loaderManager;
-
-    public long getListId() {
-        return list_id;
-    }
-
-    public static TasksFragment newInstance(long list_id) {
+    public static TasksFragment newInstance(long listId) {
         TasksFragment tasksFragment = new TasksFragment();
         Bundle args = new Bundle();
-        args.putLong(LIST_ID_KEY, list_id);
+        args.putLong(LIST_ID_KEY, listId);
         tasksFragment.setArguments(args);
+
         return tasksFragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        list_id = getArguments().getLong(LIST_ID_KEY);
-    }
+        listId = getArguments().getLong(LIST_ID_KEY);
 
-    /*@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.swipe_list_view, container, false);
-        return view;
-    }*/
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.d("klickl", "klick");
-        if (adapter.ids.contains(id)) {
-            adapter.ids.remove(id);
-        } else {
-            adapter.ids.add(id);
-        }
-        //v.refreshDrawableState();
-
-        adapter.notifyDataSetChanged();
-
-
-
-        super.onListItemClick(l, v, position, id);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        adapter = new TaskCursorAdapter(getActivity(), R.layout.list_item_task, null, 0);
+        adapter = new TaskCursorAdapter(getActivity(), listId, getLoaderManager(), 0);
         setListAdapter(adapter);
+    }
 
-        loaderManager = getLoaderManager();
-        loaderManager.initLoader(LOADER_ID, null, this);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        dynamicListView = new DynamicListView(getActivity());
+        dynamicListView.setId(android.R.id.list);
 
-        //((SwipeListView) getListView()).setSwipeListViewListener(new BaseSwipeListViewListener() {
-           /* @Override
-            public void onClickFrontView(int position) {
-                Log.d("swipe", String.format("onClickFrontView %d", position));
-            }
+        return dynamicListView;
+    }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        dynamicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClickBackView(int position) {
-                Log.d("swipe", String.format("onClickBackView %d", position));
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                adapter.toggleId(id);
             }
+        });
 
+        dynamicListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onDismiss(int[] reverseSortedPositions) {
-                for (int position : reverseSortedPositions) {
-                    StorageManager.getInstance(getActivity()).completeTask(getListAdapter().getItemId(position));
-                    refreshCursor();
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                return true;
+            }
+        });
+
+        dynamicListView.enableSwipeToDismiss(
+                new OnDismissCallback() {
+                    @Override
+                    public void onDismiss(@NonNull final ViewGroup listView, @NonNull final int[] reverseSortedPositions) {
+                        for (int position : reverseSortedPositions) {
+                            StorageManager.getInstance(getActivity()).completeTask(getListView().getItemIdAtPosition(position));
+                        }
+
+                        reload();
+                    }
                 }
-            }
-        });*/
+        );
     }
 
-    public void refreshCursor() {
-        loaderManager.restartLoader(LOADER_ID, null, TasksFragment.this);
+    public void reload() {
+        adapter.reload();
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new TasksLoader(getActivity(), list_id);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        adapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.swapCursor(null);
+    public long getListId() {
+        return listId;
     }
 }

@@ -28,8 +28,7 @@ public class NewTaskActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_task);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
 
@@ -77,7 +76,7 @@ public class NewTaskActivity extends ActionBarActivity {
                 return true;
 
             case android.R.id.home:
-                onBackPressed();
+                onBackPressed();// or finish()??
                 return true;
         }
 
