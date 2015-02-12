@@ -18,12 +18,17 @@
 
         <activity
             android:name=".NewTaskActivity"
-            android:label="@string/action_new_task"
+            android:label="@string/activity_new_task"
         />
 
         <activity
             android:name=".TrashActivity"
-            android:label="@string/action_show_trash"
+            android:label="@string/activity_show_trash"
+        />
+
+        <activity
+            android:name=".ListsActivity"
+            android:label="@string/activity_show_lists"
         />
 
         <activity

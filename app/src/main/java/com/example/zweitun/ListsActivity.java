@@ -1,23 +1,40 @@
 package com.example.zweitun;
 
-import android.app.ListActivity;
-import android.database.Cursor;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
+import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
+import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 
-public class ListsActivity extends ListActivity {
-    //CategoryCursorAdapter adapter;
+import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
+import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
+
+
+public class ListsActivity extends ActionBarActivity {
+    private ListsFragment listsFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//adapter = new CursorAdapter(getActivity(), R.layout.list_item_category, null, 0);
-        //setListAdapter(adapter);
-        swapCursor();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        listsFragment = (ListsFragment) getSupportFragmentManager().findFragmentByTag("lists_fragment");
+        if (listsFragment == null) {
+            listsFragment = new ListsFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, listsFragment, "lists_fragment")
+                    .commit();
+        }
     }
 
     @Override
@@ -27,19 +44,73 @@ public class ListsActivity extends ListActivity {
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, final int position, long id) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.action_new_list:
+                final EditText input = new EditText(this);
 
+                new AlertDialog.Builder(this)
+                        .setCancelable(true)
+                        .setMessage(getResources().getString(R.string.alert_new_list))
+                        .setView(input)
+                        .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                StorageManager.getInstance(ListsActivity.this).createList(input.getText().toString());
+                                listsFragment.reload();
+                            }
+                        }).setNegativeButton(getResources().getString(R.string.cancel), null).show();
+                return true;
+        }
 
-        Cursor cursor = (Cursor) getListAdapter().getItem(position);
-        int category_id = cursor.getInt(cursor.getColumnIndex("_id"));
-
-
-
-        super.onListItemClick(l, v, position, id);
+        return super.onOptionsItemSelected(item);
     }
 
+    public static class ListsFragment extends ListFragment {
+        private ListsCursorAdapter adapter;
+        private DynamicListView dynamicListView;
 
-    private void swapCursor() {
-        //adapter.swapCursor(((MainActivity) getActivity()).sssm.getCategories());
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            adapter = new ListsCursorAdapter(getActivity());
+            setListAdapter(adapter);
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            dynamicListView = new DynamicListView(getActivity());
+            dynamicListView.setId(android.R.id.list);
+
+            return dynamicListView;
+        }
+
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+
+            dynamicListView.enableSwipeToDismiss(
+                    new OnDismissCallback() {
+                        @Override
+                        public void onDismiss(@NonNull final ViewGroup listView, @NonNull final int[] reverseSortedPositions) {
+                            for (int position : reverseSortedPositions) {
+                                //StorageManager.getInstance(getActivity()).completeTask(getListView().getItemIdAtPosition(position));
+                            }
+
+                            reload();
+                        }
+                    }
+            );
+        }
+
+        public void reload() {
+            adapter.reload();
+        }
+
+        public void onListItemClick(ListView listView, View view, int position, long id) {
+        }
     }
 }

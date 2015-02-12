@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="activity_new_task">New task</string>
+    <string name="activity_show_trash">Trash</string>
+    <string name="activity_show_lists">Lists</string>
+</resources>

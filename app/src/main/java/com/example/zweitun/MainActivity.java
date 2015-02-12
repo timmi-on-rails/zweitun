@@ -87,8 +87,8 @@ public class MainActivity extends ActionBarActivity {
             case R.id.action_show_trash:
                 startActivity(new Intent(this, TrashActivity.class));
                 return true;
-            case R.id.action_new_category:
-                //startActivityForResult(new Intent(this, NewCategoryActivity.class), NEW_CATEGORY);
+            case R.id.action_show_lists:
+                startActivity(new Intent(this, ListsActivity.class));
                 return true;
             case R.id.action_new_task:
                 startActivityForResult(new Intent(this, NewTaskActivity.class), NEW_TASK);

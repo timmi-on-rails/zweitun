@@ -24,10 +24,6 @@ public class StorageManager {
         db = dbOpenHelper.getWritableDatabase();
     }
 
-    public void close() {
-        dbOpenHelper.close();
-    }
-
     public void deleteTask(int id) {
         db.execSQL("DELETE FROM tasks WHERE _id='"+id+"'");
     }
@@ -54,5 +50,9 @@ public class StorageManager {
 
     public void addTask(String task_name, int max_priority, String due_at, int time_scale, long list_id) {
         db.execSQL("INSERT INTO tasks (name, max_priority, due_at, time_scale, deleted_at, list_id) VALUES('" + task_name + "'," + max_priority + ",'" + due_at + "','" + time_scale + "', '', "+list_id+");");
+    }
+
+    public void createList(String name) {
+        db.execSQL("INSERT INTO lists (name) VALUES ('" + name + "')");
     }
 }

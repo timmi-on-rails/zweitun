@@ -63,8 +63,8 @@ public class TrashActivity extends ActionBarActivity {
     public static class TrashFragment extends ListFragment {
         private TrashCursorAdapter adapter;
 
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
             adapter = new TrashCursorAdapter(getActivity(), getLoaderManager(), 0);
             setListAdapter(adapter);

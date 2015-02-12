@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 // getContext() what is the usual way?
 // abstract method with body?!
-// activity and action different strings
 
 public class TrashCursorAdapter extends AdvancedCursorLoaderAdapter {
     public TrashCursorAdapter(Context context, LoaderManager loaderManager, int loaderId) {

@@ -2,6 +2,9 @@
 <resources>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
     <string name="alert_discard">Clear trash?</string>
+    <string name="alert_new_list">Enter new list name:</string>
     <string name="alert_complete_task">Complete task?</string>
 </resources>
