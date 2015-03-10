@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="enter_task_name">Name:</string>
-    <string name="task_name_hint">Name</string>
+    <string name="enter_task_due_at_date">Date:</string>
+    <string name="enter_task_due_at_time">Time:</string>
     <string name="enter_task_priority">Priority:</string>
+    <string name="enter_task_time_scale">Time Scale:</string>
+    <string name="enter_task_on_complete_action">On complete action:</string>
+    <string name="enter_task_details">Details:</string>
 </resources>

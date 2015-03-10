@@ -6,15 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ListView;
-
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.OnDismissCallback;
 
@@ -54,14 +52,14 @@ public class ListsActivity extends ActionBarActivity {
 
                 new AlertDialog.Builder(this)
                         .setCancelable(true)
-                        .setMessage(getResources().getString(R.string.alert_new_list))
+                        .setMessage(R.string.alert_new_list)
                         .setView(input)
-                        .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 StorageManager.getInstance(ListsActivity.this).createList(input.getText().toString());
                                 listsFragment.reload();
                             }
-                        }).setNegativeButton(getResources().getString(R.string.cancel), null).show();
+                        }).setNegativeButton(R.string.cancel, null).show();
                 return true;
         }
 
@@ -76,7 +74,7 @@ public class ListsActivity extends ActionBarActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            adapter = new ListsCursorAdapter(getActivity());
+            adapter = new ListsCursorAdapter(getActivity(), getLoaderManager(), 0);
             setListAdapter(adapter);
         }
 
@@ -92,15 +90,59 @@ public class ListsActivity extends ActionBarActivity {
         public void onViewCreated(View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
+            dynamicListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, final long id) {
+                    final EditText input = new EditText(getActivity());
+                    input.setText(StorageManager.getInstance(getActivity()).getListName(id));
+
+                    new AlertDialog.Builder(getActivity())
+                            .setCancelable(true)
+                            .setMessage(R.string.alert_edit_list)
+                            .setView(input)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    StorageManager.getInstance(getActivity()).renameList(id, input.getText().toString());
+                                    reload();
+                                }
+                            }).setNegativeButton(R.string.cancel, null).show();
+                    return true;
+                }
+            });
+
             dynamicListView.enableSwipeToDismiss(
                     new OnDismissCallback() {
                         @Override
                         public void onDismiss(@NonNull final ViewGroup listView, @NonNull final int[] reverseSortedPositions) {
-                            for (int position : reverseSortedPositions) {
-                                //StorageManager.getInstance(getActivity()).completeTask(getListView().getItemIdAtPosition(position));
-                            }
+                            for (final int position : reverseSortedPositions) {
+                                new AlertDialog.Builder(getActivity())
+                                        .setMessage(R.string.alert_delete_list)
+                                        .setCancelable(true)
+                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                long count = StorageManager.getInstance(getActivity()).getListCount(adapter.getItemId(position));
 
-                            reload();
+                                                if (count == 0) {
+                                                    StorageManager.getInstance(getActivity()).deleteList(adapter.getItemId(position));
+                                                    reload();
+                                                } else {
+                                                    new AlertDialog.Builder(getActivity())
+                                                            .setMessage(R.string.alert_delete_list_not_empty)
+                                                            .setCancelable(true)
+                                                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int id) {
+                                                                    StorageManager.getInstance(getActivity()).deleteList(adapter.getItemId(position));
+                                                                    reload();
+                                                                }
+                                                            })
+                                                            .setNegativeButton(R.string.no, null)
+                                                            .show();
+                                                }
+                                            }
+                                        })
+                                        .setNegativeButton(R.string.no, null)
+                                        .show();
+                            }
                         }
                     }
             );
@@ -108,9 +150,6 @@ public class ListsActivity extends ActionBarActivity {
 
         public void reload() {
             adapter.reload();
-        }
-
-        public void onListItemClick(ListView listView, View view, int position, long id) {
         }
     }
 }

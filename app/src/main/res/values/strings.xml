@@ -2,11 +2,11 @@
 <resources>
     <string name="app_name">Zwei-Tun</string>
     <string-array name="priorities">
-        <item>1 - unimportant</item>
-        <item>2 - less important</item>
-        <item>3 - normal</item>
-        <item>4 - important</item>
-        <item>5 - very important</item>
+        <item>unimportant</item>
+        <item>less important</item>
+        <item>normal</item>
+        <item>important</item>
+        <item>very important</item>
     </string-array>
 
     <string-array name="time_scales">

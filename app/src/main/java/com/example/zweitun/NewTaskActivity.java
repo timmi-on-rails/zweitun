@@ -1,16 +1,19 @@
 package com.example.zweitun;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TimePicker;
 
 import java.util.ArrayList;
@@ -37,12 +40,9 @@ public class NewTaskActivity extends ActionBarActivity {
         spinner.setSelection(2);
 
         Spinner ts = (Spinner) findViewById(R.id.time_scale);
-
-        ArrayAdapter<String> tsAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, getResources().getStringArray(R.array.time_scales));
-        tsAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        ArrayAdapter<String> tsAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, getResources().getStringArray(R.array.time_scales));
+        tsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ts.setAdapter(tsAdapter);
-
-        ((TimePicker) findViewById(R.id.timePicker)).setIs24HourView(true);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class NewTaskActivity extends ActionBarActivity {
 
                 data.putExtra(MAX_PRIORITY, ((Spinner) findViewById(R.id.spinner)).getSelectedItemPosition());
 
-                DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
+                /*DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
                 TimePicker timePicker = (TimePicker) findViewById(R.id.timePicker);
                 int year = datePicker.getYear();
                 int month = datePicker.getMonth();
@@ -68,7 +68,7 @@ public class NewTaskActivity extends ActionBarActivity {
                 int hour = timePicker.getCurrentHour();
                 int minute = timePicker.getCurrentMinute();
                 data.putExtra(DUE_AT, String.format("%04d-%02d-%02d %02d:%02d", year, month, day_of_month, hour, minute));
-
+*/
                 data.putExtra(TIME_SCALE, ((Spinner) findViewById(R.id.time_scale)).getSelectedItemPosition());
 
                 setResult(RESULT_OK, data);

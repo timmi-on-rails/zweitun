@@ -12,14 +12,16 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity {
     private static final int NEW_TASK = 1;
-    private static final String POSITION_KEY = "position";
+    private static final int SHOW_LISTS = 2;
+    private static final String LIST_ID_KEY = "list_id";
 
     private TasksFragment tasksFragment;
+    private ListsCursorAdapter navigationAdapter;
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putInt(POSITION_KEY, getSupportActionBar().getSelectedNavigationIndex());
+        savedInstanceState.putLong(LIST_ID_KEY, navigationAdapter.getItemId(getSupportActionBar().getSelectedNavigationIndex()));
     }
 
     @Override
@@ -37,11 +39,11 @@ public class MainActivity extends ActionBarActivity {
         ActionBar.OnNavigationListener navigationListener = new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int i, long l) {
-                savePersistentPosition(i);
+                savePersistentNavigationId(l);
 
                 /** Instantiate fragment */
                 tasksFragment = (TasksFragment) getSupportFragmentManager().findFragmentByTag("tasks_fragment");
-                if (tasksFragment == null || tasksFragment.getId() != l) {
+                if (tasksFragment == null || tasksFragment.getListId() != l) {
                     tasksFragment = TasksFragment.newInstance(l);
                     getSupportFragmentManager().beginTransaction()
                             .replace(android.R.id.content, tasksFragment, "tasks_fragment")
@@ -50,25 +52,41 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             }
         };
-        actionBar.setListNavigationCallbacks(new NavigationAdapter(this), navigationListener);
+        navigationAdapter = new ListsCursorAdapter(this, R.layout.navigation_spinner_item, R.layout.navigation_spinner_dropdown_item, getSupportLoaderManager(), 0);
+        actionBar.setListNavigationCallbacks(navigationAdapter, navigationListener);
 
         /** Restore selected navigation index */
-        int position;
+        long id;
         if (savedInstanceState != null) {
-            position = savedInstanceState.getInt(POSITION_KEY, 0);
+            id = savedInstanceState.getLong(LIST_ID_KEY, 0);
         } else {
-            position = PreferenceManager.getDefaultSharedPreferences(this).getInt(POSITION_KEY, 0);
+            id = PreferenceManager.getDefaultSharedPreferences(this).getLong(LIST_ID_KEY, 0);
         }
-        actionBar.setSelectedNavigationItem(position);
+        setSelectedNavigationId(id);
+    }
+
+    private void setSelectedNavigationId(long id) {
+        int position = navigationAdapter.getPosition(id);
+
+        if (position >= 0) {
+            getSupportActionBar().setSelectedNavigationItem(position);
+        }
+    }
+
+    public void reload() {
+        ActionBar actionBar = getSupportActionBar();
+        long list_id = navigationAdapter.getItemId(actionBar.getSelectedNavigationIndex());
+        navigationAdapter.reload();
+        setSelectedNavigationId(list_id);
     }
 
     /**
      *  Save the navigation index to shared preferences
      *  Chance to restore the list selection on app restart
      */
-    private void savePersistentPosition(int position) {
+    private void savePersistentNavigationId(long id) {
         SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        edit.putInt(POSITION_KEY, position);
+        edit.putLong(LIST_ID_KEY, id);
         edit.commit();
     }
 
@@ -88,7 +106,7 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(new Intent(this, TrashActivity.class));
                 return true;
             case R.id.action_show_lists:
-                startActivity(new Intent(this, ListsActivity.class));
+                startActivityForResult(new Intent(this, ListsActivity.class), SHOW_LISTS);
                 return true;
             case R.id.action_new_task:
                 startActivityForResult(new Intent(this, NewTaskActivity.class), NEW_TASK);
@@ -100,19 +118,25 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NEW_TASK) {
-            if (resultCode == RESULT_OK) {
-                String task_name = data.getStringExtra(NewTaskActivity.TASK_NAME);
-                int max_priority = data.getIntExtra(NewTaskActivity.MAX_PRIORITY, 2);
-                String due_at = data.getStringExtra(NewTaskActivity.DUE_AT);
-                int time_scale = data.getIntExtra(NewTaskActivity.TIME_SCALE, -1);
+        switch(requestCode) {
+            case NEW_TASK:
+                if (resultCode == RESULT_OK) {
+                    String task_name = data.getStringExtra(NewTaskActivity.TASK_NAME);
+                    int max_priority = data.getIntExtra(NewTaskActivity.MAX_PRIORITY, 2);
+                    String due_at = data.getStringExtra(NewTaskActivity.DUE_AT);
+                    int time_scale = data.getIntExtra(NewTaskActivity.TIME_SCALE, -1);
 
-                if (tasksFragment != null) {
-                    StorageManager.getInstance(this).addTask(task_name, max_priority, due_at, time_scale, tasksFragment.getListId());
-                    tasksFragment.reload();
+                    if (tasksFragment != null) {
+                        StorageManager.getInstance(this).addTask(task_name, max_priority, due_at, time_scale, tasksFragment.getListId());
+                        tasksFragment.reload();
+                    }
                 }
-            }
+                break;
+            case SHOW_LISTS:
+                reload();
+                break;
         }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.ResourceCursorAdapter;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -39,13 +42,27 @@ public class TaskCursorAdapter extends AdvancedCursorLoaderAdapter {
 
         task_name.setText(cursor.getString(cursor.getColumnIndex("name")));
         task_name.setTextColor(context.getResources().getIntArray(R.array.priority_colors)[cursor.getInt(cursor.getColumnIndex("priority"))]);
-        task_due_at.setText(cursor.getString(cursor.getColumnIndex("due_at")));
+
+        String dateOfBirth = cursor.getString(cursor.getColumnIndex("due_at"));
+        /*SimpleDateFormat sdf = new SimpleDateTDateFormat("dd/MM/yyyy");
+        DateTimeFormat s;
+        Date date = null;
+        try {
+            date = sdf.parse(dateOfBirth);
+        } catch (ParseException e) {
+            // handle exception here !
+        }
+        DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
+        */
+        String s = DateUtils.formatDateTime(context, 0, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY);
+
+        task_due_at.setText(s);
 
         TextView textView = (TextView) view.findViewById(R.id.task_test);
 
+
         if (idExpanded(cursor.getLong(cursor.getColumnIndex("_id")))) {
             textView.setVisibility(View.VISIBLE);
-
         } else {
             textView.setVisibility(View.GONE);
         }

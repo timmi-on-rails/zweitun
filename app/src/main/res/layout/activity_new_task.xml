@@ -11,12 +11,19 @@
     android:padding="10dp"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_task_name" />
     <EditText
-        android:hint="@string/task_name_hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/taskName" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_task_priority" />
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,31 +32,45 @@
         android:clickable="true"
         android:textSize="26sp" />
 
-    <CheckBox
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Has date?"
-        android:id="@+id/checkBox" />
+        android:text="@string/enter_task_due_at_date" />
+    <com.example.zweitun.DateEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/taskDate" />
 
-    <DatePicker
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/datePicker" />
+        android:text="@string/enter_task_due_at_time" />
+    <com.example.zweitun.TimeEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/taskTime" />
 
-    <TimePicker
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/timePicker" />
-
+        android:text="@string/enter_task_time_scale" />
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/time_scale"
         android:spinnerMode="dropdown"
         android:clickable="true"
-        android:textSize="26sp"
-        android:entries="@array/time_scales"
-        />
+        android:entries="@array/time_scales" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_task_on_complete_action" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_task_details" />
 
 </LinearLayout>
     </ScrollView>

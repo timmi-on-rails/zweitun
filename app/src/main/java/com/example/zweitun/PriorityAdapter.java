@@ -24,8 +24,7 @@ public class PriorityAdapter extends ArrayAdapter<CharSequence> {
         if (view instanceof TextView) {
             TextView textView = (TextView) view;
             textView.setTextColor(parent.getResources().getIntArray(R.array.priority_colors)[position]);
-            textView.setTextSize(25);
-            textView.setGravity(Gravity.CENTER);
+            //textView.setTextSize(25);
         }
 
         return view;
@@ -36,7 +35,7 @@ public class PriorityAdapter extends ArrayAdapter<CharSequence> {
         View view = super.getDropDownView(position, convertView, parent);
         if (view instanceof TextView) {
             TextView textView = (TextView) view;
-            //textView.setTextSize(25);
+            //textView.setTextAppearance(getContext(), R.style.TextAppearance_AppCompat_Medium);
         }
 
         return view;

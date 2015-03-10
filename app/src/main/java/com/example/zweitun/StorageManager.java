@@ -1,9 +1,9 @@
 package com.example.zweitun;
 
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 
 public class StorageManager {
     private SQLiteDatabase db;
@@ -54,5 +54,33 @@ public class StorageManager {
 
     public void createList(String name) {
         db.execSQL("INSERT INTO lists (name) VALUES ('" + name + "')");
+        // check if successful ?
+    }
+
+    public long getListCount(long id) {
+        Cursor c = db.rawQuery("SELECT COUNT(*) FROM tasks WHERE list_id = '" + id + "'", null);
+        c.moveToFirst();
+        long count = c.getLong(0);
+        c.close();
+
+        return count;
+    }
+
+    public String getListName(long id) {
+        Cursor c = db.rawQuery("SELECT name FROM lists WHERE _id = '" + id + "'", null);
+        c.moveToFirst();
+        String name = c.getString(0);
+        c.close();
+
+        return name;
+    }
+
+    public void deleteList(long id) {
+        db.execSQL("DELETE FROM tasks WHERE list_id = '" + id + "'");
+        db.execSQL("DELETE FROM lists WHERE _id = '" + id + "'");
+    }
+
+    public void renameList(long id, String name) {
+        db.execSQL("UPDATE lists SET name='" + name + "' WHERE _id = '" + id + "'");
     }
 }
