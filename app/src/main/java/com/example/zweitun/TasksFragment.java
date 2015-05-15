@@ -38,17 +38,25 @@ public class TasksFragment extends ListFragment {
         setListAdapter(adapter);
     }
 
-    @Override
+    /*@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         dynamicListView = new DynamicListView(getActivity());
         dynamicListView.setId(android.R.id.list);
 
         return dynamicListView;
     }
+    */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_tasks, container, false);
+
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        dynamicListView = (DynamicListView) getActivity().findViewById(android.R.id.list);
+
         dynamicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -2,10 +2,12 @@ package com.example.zweitun;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -36,6 +38,8 @@ public class MainActivity extends ActionBarActivity {
 
         /** Setup navigation */
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        navigationAdapter = new ListsCursorAdapter(this, R.layout.navigation_spinner_item, R.layout.navigation_spinner_dropdown_item, getSupportLoaderManager(), 0);
+
         ActionBar.OnNavigationListener navigationListener = new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int i, long l) {
@@ -52,7 +56,6 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             }
         };
-        navigationAdapter = new ListsCursorAdapter(this, R.layout.navigation_spinner_item, R.layout.navigation_spinner_dropdown_item, getSupportLoaderManager(), 0);
         actionBar.setListNavigationCallbacks(navigationAdapter, navigationListener);
 
         /** Restore selected navigation index */
@@ -67,7 +70,6 @@ public class MainActivity extends ActionBarActivity {
 
     private void setSelectedNavigationId(long id) {
         int position = navigationAdapter.getPosition(id);
-
         if (position >= 0) {
             getSupportActionBar().setSelectedNavigationItem(position);
         }

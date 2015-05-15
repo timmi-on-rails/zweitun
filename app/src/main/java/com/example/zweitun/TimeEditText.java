@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.internal.widget.TintEditText;
@@ -16,9 +17,8 @@ import android.widget.TimePicker;
 import java.text.DateFormat;
 import java.util.Calendar;
 
-public class TimeEditText extends TintEditText implements DialogInterface.OnClickListener {
-    private Calendar calendar;
 
+public class TimeEditText extends TintEditText {
     public TimeEditText(Context context) {
         super(context);
         init();
@@ -35,8 +35,6 @@ public class TimeEditText extends TintEditText implements DialogInterface.OnClic
     }
 
     private void init() {
-        calendar = Calendar.getInstance();
-
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,93 +52,54 @@ public class TimeEditText extends TintEditText implements DialogInterface.OnClic
         });
     }
 
-    private void syncText() {
-        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(getContext());
-        setText(timeFormat.format(calendar.getTime()));
-    }
-
-    private void clearTime() {
-        calendar = Calendar.getInstance();
-        setText("");
-    }
-
     private void openDialog() {
-        /*TimePickerDialog dlg = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
-                syncText();
-            }
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), android.text.format.DateFormat.is24HourFormat(getContext()));
-
-        dlg.setButton(TimePickerDialog.BUTTON_NEGATIVE, getResources().getString(R.string.clear), this);
-        dlg.show();*/
-        DialogFragment newFragment = new TimePickerFragment();
-
         FragmentManager fragmentManager = ((FragmentActivity) getContext()).getSupportFragmentManager();
 
-        newFragment.show(fragmentManager, "timePicker");
-    }
-
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        if (which == TimePickerDialog.BUTTON_NEGATIVE) {
-            clearTime();
+        Fragment existingFragment = fragmentManager.findFragmentByTag("timePicker");
+        if (existingFragment == null) {
+            TimePickerFragment timePickerFragment = TimePickerFragment.newInstance(R.id.taskTime);
+            timePickerFragment.show(fragmentManager, "timePicker");
         }
     }
 
-    public Calendar getCalendar() {
-        if (!getText().toString().isEmpty()) {
-            return calendar;
-        }
+    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener, DialogInterface.OnClickListener  {
+        public static final String TIME_EDIT_TEXT_ID_KEY = "time_edit_text_id_key";
 
-        return null;
-    }
+        private TimeEditText timeEditText;
 
-    public void setCalendar(Calendar calendar) {
-        if (calendar != null) {
-            this.calendar = calendar;
-            syncText();
-        } else {
-            clearTime();
-        }
-    }
-
-    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-
-        public static TimePickerFragment newInstance(int hour, int day) {
-            TasksFragment tasksFragment = new TasksFragment();
+        public static TimePickerFragment newInstance(int timeEditTextId) {
+            TimePickerFragment timePickerFragment = new TimePickerFragment();
             Bundle args = new Bundle();
-            args.putLong(LIST_ID_KEY, listId);
-            tasksFragment.setArguments(args);
+            args.putInt(TIME_EDIT_TEXT_ID_KEY, timeEditTextId);
+            timePickerFragment.setArguments(args);
 
-            return tasksFragment;
+            return timePickerFragment;
         }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-            TimePickerDialog dlg = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
-                @Override
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            timeEditText  = (TimeEditText) getActivity().findViewById(getArguments().getInt(TIME_EDIT_TEXT_ID_KEY));
+            Calendar calendar = Calendar.getInstance();
 
-                }
-            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), android.text.format.DateFormat.is24HourFormat(getContext()));
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), android.text.format.DateFormat.is24HourFormat(getActivity()));
+            timePickerDialog.setButton(TimePickerDialog.BUTTON_NEGATIVE, getResources().getString(R.string.clear), this);
 
-            dlg.setButton(TimePickerDialog.BUTTON_NEGATIVE, getResources().getString(R.string.clear), this);
-            // Create a new instance of TimePickerDialog and return it
-            return dlg;
+            return timePickerDialog;
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            // Do something with the time chosen by the user
-
+            Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
-            syncText();
+            DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity());
+            timeEditText.setText(timeFormat.format(calendar.getTime()));
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if (which == TimePickerDialog.BUTTON_NEGATIVE) {
+                timeEditText.setText("");
+            }
         }
     }
 }
